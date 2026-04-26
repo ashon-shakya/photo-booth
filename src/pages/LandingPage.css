@@ -1,0 +1,92 @@
+.landing-page {
+  position: relative;
+  overflow: hidden;
+}
+
+.landing-content {
+  position: relative;
+  z-index: 1;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 60px 24px 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 64px;
+}
+
+/* Hero */
+.landing-hero {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  border-radius: 99px;
+  background: var(--surface);
+  border: 1px solid var(--border-bright);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-1);
+  letter-spacing: 0.02em;
+}
+
+.hero-title {
+  font-size: clamp(2.4rem, 6vw, 4.5rem);
+  font-weight: 900;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--text-0);
+}
+
+.hero-subtitle {
+  max-width: 500px;
+  font-size: 1.05rem;
+  color: var(--text-2);
+  line-height: 1.7;
+}
+
+/* Section */
+.template-section {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.section-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-0);
+  letter-spacing: 0.01em;
+}
+
+/* CTA */
+.landing-cta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.btn-lg {
+  padding: 16px 44px;
+  font-size: 17px;
+}
+
+.btn-primary:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.cta-hint {
+  font-size: 13px;
+  color: var(--text-3);
+}
