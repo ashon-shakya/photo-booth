@@ -31,35 +31,35 @@ function drawImageCover(
 
 // ─── Classic Strip ────────────────────────────────────────
 export const renderClassicStrip: RenderFn = (ctx, photos, W, H) => {
-  const pad = W * 0.06;
-  const gap = W * 0.04;
-  const photoH = (H - pad * 2 - gap * 2) / 3;
+  const pad = W * 0.08;
+  const gap = W * 0.05;
+  const photoH = (H - pad * 2.5 - gap * 2) / 3;
   const photoW = W - pad * 2;
 
-  // Background
-  ctx.fillStyle = '#111';
+  // Deep black background
+  ctx.fillStyle = '#0a0a0a';
   ctx.fillRect(0, 0, W, H);
 
-  // Gold edge lines
-  ctx.strokeStyle = '#f5c84244';
-  ctx.lineWidth = 1;
-  ctx.strokeRect(4, 4, W - 8, H - 8);
+  // Red edge accent
+  ctx.strokeStyle = 'rgba(255,45,45,0.5)';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(5, 5, W - 10, H - 10);
 
   // Sprocket holes
-  const holeR = 4;
-  const holeSpacing = 22;
-  ctx.fillStyle = '#222';
+  const holeR = 5;
+  const holeSpacing = 24;
+  ctx.fillStyle = '#1a1a1a';
   for (let y = pad; y < H - pad; y += holeSpacing) {
-    ctx.beginPath(); ctx.arc(10, y, holeR, 0, Math.PI * 2); ctx.fill();
-    ctx.beginPath(); ctx.arc(W - 10, y, holeR, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(11, y, holeR, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(W - 11, y, holeR, 0, Math.PI * 2); ctx.fill();
   }
 
   photos.forEach((img, i) => {
-    const py = pad + i * (photoH + gap);
+    const py = pad * 0.8 + i * (photoH + gap);
     ctx.save();
     // White frame
     ctx.fillStyle = '#fff';
-    ctx.fillRect(pad - 2, py - 2, photoW + 4, photoH + 4);
+    ctx.fillRect(pad - 3, py - 3, photoW + 6, photoH + 6);
     ctx.beginPath();
     ctx.rect(pad, py, photoW, photoH);
     ctx.clip();
@@ -68,93 +68,167 @@ export const renderClassicStrip: RenderFn = (ctx, photos, W, H) => {
   });
 
   // Brand text at bottom
-  ctx.fillStyle = '#f5c842';
-  ctx.font = `bold ${W * 0.07}px 'Special Elite', monospace`;
+  ctx.fillStyle = '#ff2d2d';
+  ctx.font = `bold ${W * 0.085}px 'Special Elite', monospace`;
   ctx.textAlign = 'center';
-  ctx.fillText('PHOTO BOOTH', W / 2, H - 12);
+  ctx.fillText('PHOTO BOOTH', W / 2, H - pad * 0.35);
 };
 
 // ─── Newspaper ────────────────────────────────────────────
+// "The Society" style — goofy breaking news broadsheet
 export const renderNewspaper: RenderFn = (ctx, photos, W, H) => {
-  // Aged paper background
-  ctx.fillStyle = '#e8dfc8';
+  // Off-white newsprint background
+  ctx.fillStyle = '#f2edd8';
   ctx.fillRect(0, 0, W, H);
 
-  // Noise texture lines
-  ctx.strokeStyle = 'rgba(139,119,80,0.08)';
+  // Subtle newsprint grain
+  ctx.strokeStyle = 'rgba(139,119,80,0.06)';
   ctx.lineWidth = 1;
   for (let y = 0; y < H; y += 4) {
     ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
   }
 
-  const marg = W * 0.05;
-  const inner = W - marg * 2;
+  const marg = W * 0.055;
 
-  // Masthead
-  ctx.fillStyle = '#1a1006';
-  ctx.font = `900 ${W * 0.1}px 'Playfair Display', serif`;
+  // ── MASTHEAD ──────────────────────────────────────────────
+  // Top thick rule
+  ctx.fillStyle = '#111';
+  ctx.fillRect(marg, marg, W - marg * 2, W * 0.012);
+
+  // Newspaper name
+  ctx.fillStyle = '#111';
+  ctx.font = `900 ${W * 0.155}px 'Playfair Display', serif`;
   ctx.textAlign = 'center';
-  ctx.fillText('THE DAILY BOOTH', W / 2, marg + W * 0.09);
+  ctx.fillText('THE SOCIETY', W / 2, marg + W * 0.175);
 
-  // Divider lines
-  ctx.strokeStyle = '#1a1006';
-  ctx.lineWidth = 3;
-  ctx.beginPath(); ctx.moveTo(marg, marg + W * 0.105); ctx.lineTo(W - marg, marg + W * 0.105); ctx.stroke();
-  ctx.lineWidth = 1;
-  ctx.beginPath(); ctx.moveTo(marg, marg + W * 0.115); ctx.lineTo(W - marg, marg + W * 0.115); ctx.stroke();
+  // Thin rule below masthead
+  ctx.fillStyle = '#111';
+  ctx.fillRect(marg, marg + W * 0.19, W - marg * 2, W * 0.004);
+  ctx.fillRect(marg, marg + W * 0.197, W - marg * 2, W * 0.002);
 
-  // Date line
-  const date = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-  ctx.font = `${W * 0.028}px 'Special Elite', monospace`;
+  // Sub-info line
+  const today = new Date();
+  const dateStr = today.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }).toUpperCase();
+  const vol = `VOL. ${today.getFullYear() - 1999}, NO.${today.getMonth() * 30 + today.getDate()}`;
+  ctx.font = `500 ${W * 0.028}px 'Special Elite', monospace`;
   ctx.textAlign = 'left';
-  ctx.fillText(date.toUpperCase(), marg, marg + W * 0.14);
-  ctx.textAlign = 'right';
-  ctx.fillText('VOL. I  •  EDITION 1', W - marg, marg + W * 0.14);
-
-  ctx.lineWidth = 1;
-  ctx.beginPath(); ctx.moveTo(marg, marg + W * 0.15); ctx.lineTo(W - marg, marg + W * 0.15); ctx.stroke();
-
-  // Headline
+  ctx.fillText(vol, marg, marg + W * 0.226);
   ctx.textAlign = 'center';
-  ctx.font = `bold ${W * 0.065}px 'Playfair Display', serif`;
-  ctx.fillStyle = '#0d0a04';
-  ctx.fillText('CAPTURED IN STYLE', W / 2, marg + W * 0.21);
+  ctx.fillText('★  THESOCIETYNEWS.COM  ★', W / 2, marg + W * 0.226);
+  ctx.textAlign = 'right';
+  ctx.fillText(dateStr, W - marg, marg + W * 0.226);
 
-  ctx.font = `italic ${W * 0.033}px 'Playfair Display', serif`;
-  ctx.fillStyle = '#4a3a1a';
-  ctx.fillText('Three Moments Worth Remembering', W / 2, marg + W * 0.245);
+  // Medium rule
+  ctx.fillStyle = '#111';
+  ctx.fillRect(marg, marg + W * 0.24, W - marg * 2, W * 0.003);
 
-  const colStart = marg + W * 0.26;
-  const photoW = (inner - W * 0.03) / 3;
-  const photoH = H - colStart - marg - W * 0.1;
+  // ── HEADLINE ─────────────────────────────────────────────
+  ctx.fillStyle = '#111';
+  ctx.font = `900 ${W * 0.072}px 'Playfair Display', serif`;
+  ctx.textAlign = 'center';
+  ctx.fillText('BREAKING NEWS', W / 2, marg + W * 0.305);
 
-  // Column dividers & photos
+  // Thin rule
+  ctx.fillRect(marg, marg + W * 0.315, W - marg * 2, W * 0.002);
+
+  // ── TWO-COLUMN LAYOUT ────────────────────────────────────
+  const colTop = marg + W * 0.335;
+  const colH = H - colTop - marg * 1.2;
+  const colGap = W * 0.04;
+  const leftW = W * 0.42;
+  const rightW = W - marg * 2 - leftW - colGap;
+  const leftX = marg;
+  const rightX = marg + leftW + colGap;
+
+  // ── LEFT COLUMN: text + quote ──
+  // Sub-headline
+  ctx.fillStyle = '#111';
+  ctx.font = `bold ${W * 0.038}px 'Playfair Display', serif`;
+  ctx.textAlign = 'left';
+  const subHead = 'LOCAL LEGENDS SPOTTED';
+  ctx.fillText(subHead, leftX, colTop + W * 0.04);
+  ctx.fillText('IN WILD PHOTO FRENZY', leftX, colTop + W * 0.082);
+
+  // Thin rule under sub-headline
+  ctx.strokeStyle = '#555';
+  ctx.lineWidth = 0.7;
+  ctx.beginPath(); ctx.moveTo(leftX, colTop + W * 0.095); ctx.lineTo(leftX + leftW, colTop + W * 0.095); ctx.stroke();
+
+  // Body copy — goofy news story
+  const bodyLines = [
+    'Sources confirm that a group of undeniably',
+    'photogenic individuals commandeered a high-tech',
+    'photo booth unit and proceeded to strike poses',
+    'described by witnesses as "iconic," "legendary,"',
+    'and "frankly, a bit too much."',
+    '',
+    'The suspects reportedly insisted on taking three',
+    'separate shots, each more dramatic than the last.',
+    'Bystanders applauded. One onlooker fainted.',
+    '',
+    'Authorities have ruled the incident "absolutely',
+    'worth it" and have issued no citations, though',
+    'several selfie requests are still pending review.',
+  ];
+  ctx.font = `${W * 0.027}px Georgia, serif`;
+  ctx.fillStyle = '#222';
+  let textY = colTop + W * 0.115;
+  for (const line of bodyLines) {
+    ctx.fillText(line, leftX, textY);
+    textY += W * 0.036;
+  }
+
+  // Pull quote box
+  const quoteBoxTop = textY + W * 0.02;
+  const quoteBoxH = W * 0.14;
+  ctx.fillStyle = '#111';
+  ctx.fillRect(leftX, quoteBoxTop, leftW, quoteBoxH);
+  ctx.fillStyle = '#f2edd8';
+  ctx.font = `italic bold ${W * 0.033}px 'Playfair Display', serif`;
+  ctx.textAlign = 'center';
+  ctx.fillText('"Truly the most important', leftX + leftW / 2, quoteBoxTop + quoteBoxH * 0.35);
+  ctx.fillText('photos ever taken."', leftX + leftW / 2, quoteBoxTop + quoteBoxH * 0.65);
+
+  // Column divider
+  ctx.strokeStyle = '#bbb';
+  ctx.lineWidth = 0.8;
+  ctx.beginPath();
+  ctx.moveTo(rightX - colGap / 2, colTop);
+  ctx.lineTo(rightX - colGap / 2, colTop + colH);
+  ctx.stroke();
+
+  // ── RIGHT COLUMN: photos ──
+  const photoGap = W * 0.03;
+  const photoH = (colH - photoGap * 2) / 3;
+
   photos.forEach((img, i) => {
-    const px = marg + i * (photoW + W * 0.015);
-    if (i > 0) {
-      ctx.strokeStyle = '#1a1006';
-      ctx.lineWidth = 0.5;
-      ctx.beginPath(); ctx.moveTo(px - W * 0.0075, colStart); ctx.lineTo(px - W * 0.0075, H - marg - W * 0.06); ctx.stroke();
-    }
+    const py = colTop + i * (photoH + photoGap);
+
+    // Photo border
     ctx.save();
-    ctx.beginPath(); ctx.rect(px, colStart, photoW, photoH); ctx.clip();
-    drawImageCover(ctx, img, px, colStart, photoW, photoH);
+    ctx.fillStyle = '#ddd';
+    ctx.fillRect(rightX - 2, py - 2, rightW + 4, photoH + 4);
+    ctx.beginPath();
+    ctx.rect(rightX, py, rightW, photoH);
+    ctx.clip();
+    drawImageCover(ctx, img, rightX, py, rightW, photoH);
     ctx.restore();
+
     // Caption
-    ctx.fillStyle = '#2a1a06';
-    ctx.font = `italic ${W * 0.026}px 'Playfair Display', serif`;
+    ctx.fillStyle = '#444';
+    ctx.font = `italic ${W * 0.024}px 'Playfair Display', serif`;
     ctx.textAlign = 'center';
-    ctx.fillText(`Photo ${i + 1}`, px + photoW / 2, H - marg - W * 0.035);
+    const captions = ['Moment of pure brilliance.', 'The crowd goes wild.', 'History is made.'];
+    ctx.fillText(captions[i], rightX + rightW / 2, py + photoH + W * 0.025);
   });
 
-  // Footer line
-  ctx.strokeStyle = '#1a1006';
-  ctx.lineWidth = 2;
-  ctx.beginPath(); ctx.moveTo(marg, H - marg - W * 0.065); ctx.lineTo(W - marg, H - marg - W * 0.065); ctx.stroke();
-  ctx.font = `${W * 0.025}px 'Special Elite', monospace`;
-  ctx.fillStyle = '#4a3a1a';
+  // ── FOOTER ────────────────────────────────────────────────
+  ctx.fillStyle = '#111';
+  ctx.fillRect(marg, H - marg - W * 0.012, W - marg * 2, W * 0.003);
+  ctx.font = `${W * 0.022}px 'Special Elite', monospace`;
+  ctx.fillStyle = '#555';
   ctx.textAlign = 'center';
-  ctx.fillText('© THE DAILY BOOTH  •  ALL PHOTOS RESERVED', W / 2, H - marg - W * 0.02);
+  ctx.fillText('© THE SOCIETY NEWS  •  "IF IT HAPPENED IN THE BOOTH, IT HAPPENED."', W / 2, H - marg - W * 0.002);
 };
 
 // ─── Columns ──────────────────────────────────────────────
@@ -165,17 +239,17 @@ export const renderColumns: RenderFn = (ctx, photos, W, H) => {
   ctx.fillStyle = grad;
   ctx.fillRect(0, 0, W, H);
 
-  const pad = H * 0.06;
-  const gap = H * 0.025;
+  const pad = H * 0.07;
+  const gap = H * 0.035;
   const colW = (W - pad * 2 - gap * 2) / 3;
   const colH = H - pad * 2;
 
   // Top accent bar
   const barGrad = ctx.createLinearGradient(0, 0, W, 0);
-  barGrad.addColorStop(0, '#6ab3ff');
-  barGrad.addColorStop(1, '#b36aff');
+  barGrad.addColorStop(0, '#ff2d2d');
+  barGrad.addColorStop(1, '#ff7a2d');
   ctx.fillStyle = barGrad;
-  ctx.fillRect(0, 0, W, 4);
+  ctx.fillRect(0, 0, W, 5);
 
   photos.forEach((img, i) => {
     const px = pad + i * (colW + gap);
@@ -200,22 +274,22 @@ export const renderColumns: RenderFn = (ctx, photos, W, H) => {
 
     // Number badge
     const badgeGrad = ctx.createLinearGradient(px, py, px + colW, py);
-    badgeGrad.addColorStop(0, '#6ab3ff');
-    badgeGrad.addColorStop(1, '#b36aff');
+    badgeGrad.addColorStop(0, '#ff2d2d');
+    badgeGrad.addColorStop(1, '#ff7a2d');
     ctx.fillStyle = badgeGrad;
     ctx.beginPath();
-    ctx.roundRect(px + 10, py + 10, 32, 32, 8);
+    ctx.roundRect(px + 12, py + 12, 34, 34, 8);
     ctx.fill();
     ctx.fillStyle = '#fff';
     ctx.font = `bold ${colH * 0.045}px Inter, sans-serif`;
     ctx.textAlign = 'center';
-    ctx.fillText(`${i + 1}`, px + 26, py + 31);
+    ctx.fillText(`${i + 1}`, px + 29, py + 33);
   });
 
   // Bottom label
   const textGrad = ctx.createLinearGradient(0, 0, W, 0);
-  textGrad.addColorStop(0, '#6ab3ff');
-  textGrad.addColorStop(1, '#b36aff');
+  textGrad.addColorStop(0, '#ff2d2d');
+  textGrad.addColorStop(1, '#ff7a2d');
   ctx.fillStyle = textGrad;
   ctx.font = `900 ${H * 0.042}px Inter, sans-serif`;
   ctx.textAlign = 'center';
@@ -240,14 +314,14 @@ export const renderPolaroid: RenderFn = (ctx, photos, W, H) => {
     ctx.fill();
   }
 
-  const pW = W * 0.34;
-  const pH = pW * 1.2;
-  const imgH = pW * 0.82;
+  const pW = W * 0.36;
+  const pH = pW * 1.22;
+  const imgH = pW * 0.84;
 
   const positions = [
-    { x: W * 0.05,  y: H * 0.04,  rot: -6 },
-    { x: W * 0.34,  y: H * 0.28,  rot: 4  },
-    { x: W * 0.6,   y: H * 0.06,  rot: -3 },
+    { x: W * 0.04, y: H * 0.04,  rot: -7 },
+    { x: W * 0.33, y: H * 0.29,  rot: 4.5 },
+    { x: W * 0.59, y: H * 0.05,  rot: -2.5 },
   ];
 
   photos.forEach((img, i) => {
@@ -258,9 +332,9 @@ export const renderPolaroid: RenderFn = (ctx, photos, W, H) => {
 
     // Drop shadow
     ctx.shadowColor = 'rgba(0,0,0,0.55)';
-    ctx.shadowBlur = 20;
-    ctx.shadowOffsetX = 4;
-    ctx.shadowOffsetY = 8;
+    ctx.shadowBlur = 22;
+    ctx.shadowOffsetX = 5;
+    ctx.shadowOffsetY = 9;
 
     // White polaroid card
     ctx.fillStyle = '#faf9f5';
@@ -270,14 +344,14 @@ export const renderPolaroid: RenderFn = (ctx, photos, W, H) => {
     // Photo area
     ctx.save();
     ctx.beginPath();
-    ctx.rect(-pW / 2 + pW * 0.05, -pH / 2 + pW * 0.05, pW * 0.9, imgH);
+    ctx.rect(-pW / 2 + pW * 0.055, -pH / 2 + pW * 0.055, pW * 0.89, imgH);
     ctx.clip();
-    drawImageCover(ctx, img, -pW / 2 + pW * 0.05, -pH / 2 + pW * 0.05, pW * 0.9, imgH);
+    drawImageCover(ctx, img, -pW / 2 + pW * 0.055, -pH / 2 + pW * 0.055, pW * 0.89, imgH);
     ctx.restore();
 
     // Tape strip
     ctx.fillStyle = 'rgba(255,255,180,0.6)';
-    ctx.fillRect(-pW * 0.12, -pH / 2 - 8, pW * 0.24, 14);
+    ctx.fillRect(-pW * 0.13, -pH / 2 - 9, pW * 0.26, 15);
 
     ctx.restore();
   });
@@ -290,7 +364,7 @@ export const renderFilmReel: RenderFn = (ctx, photos, W, H) => {
 
   const holeW = H * 0.12;
   const holeH = H * 0.08;
-  const holeGap = H * 0.055;
+  const holeGap = H * 0.06;
   const holeMarginY = H * 0.06;
   const numHoles = Math.floor((W) / (holeW + holeGap));
 
@@ -310,17 +384,17 @@ export const renderFilmReel: RenderFn = (ctx, photos, W, H) => {
   });
 
   // Photo frames
-  const photoZoneTop = H * 0.22;
-  const photoZoneH = H * 0.56;
-  const frameGap = W * 0.018;
+  const photoZoneTop = H * 0.23;
+  const photoZoneH = H * 0.54;
+  const frameGap = W * 0.025;
   const frameW = (W - frameGap * 4) / 3;
 
   photos.forEach((img, i) => {
     const px = frameGap + i * (frameW + frameGap);
 
     ctx.save();
-    ctx.shadowColor = 'rgba(255,50,50,0.25)';
-    ctx.shadowBlur = 20;
+    ctx.shadowColor = 'rgba(255,45,45,0.3)';
+    ctx.shadowBlur = 24;
     ctx.fillStyle = '#111';
     ctx.fillRect(px, photoZoneTop, frameW, photoZoneH);
     ctx.restore();
@@ -331,14 +405,14 @@ export const renderFilmReel: RenderFn = (ctx, photos, W, H) => {
     ctx.restore();
 
     // Red frame number
-    ctx.fillStyle = '#ff4444';
+    ctx.fillStyle = '#ff2d2d';
     ctx.font = `bold ${H * 0.06}px Inter, sans-serif`;
     ctx.textAlign = 'right';
-    ctx.fillText(`${i + 1}`, px + frameW - 8, photoZoneTop + H * 0.07);
+    ctx.fillText(`${i + 1}`, px + frameW - 10, photoZoneTop + H * 0.08);
   });
 
   // Cinematic label
-  ctx.fillStyle = '#ff4444';
+  ctx.fillStyle = '#ff2d2d';
   ctx.font = `bold ${H * 0.1}px 'Special Elite', monospace`;
   ctx.textAlign = 'center';
   ctx.fillText('● PHOTO BOOTH', W / 2, H * 0.16);
@@ -346,21 +420,21 @@ export const renderFilmReel: RenderFn = (ctx, photos, W, H) => {
 
 // ─── Magazine Cover ───────────────────────────────────────
 export const renderMagazine: RenderFn = (ctx, photos, W, H) => {
-  // Dark purple bg
+  // Dark bg
   const grad = ctx.createLinearGradient(0, 0, 0, H);
-  grad.addColorStop(0, '#120822');
-  grad.addColorStop(1, '#1e0a38');
+  grad.addColorStop(0, '#120202');
+  grad.addColorStop(1, '#1e0404');
   ctx.fillStyle = grad;
   ctx.fillRect(0, 0, W, H);
 
-  const marg = W * 0.04;
+  const marg = W * 0.045;
   const heroH = H * 0.52;
-  const heroY = H * 0.13;
+  const heroY = H * 0.14;
 
   // Hero photo
   ctx.save();
-  ctx.shadowColor = 'rgba(179,106,255,0.4)';
-  ctx.shadowBlur = 40;
+  ctx.shadowColor = 'rgba(255,45,45,0.4)';
+  ctx.shadowBlur = 50;
   ctx.beginPath();
   ctx.roundRect(marg, heroY, W - marg * 2, heroH, 8);
   ctx.clip();
@@ -370,39 +444,38 @@ export const renderMagazine: RenderFn = (ctx, photos, W, H) => {
   // Gradient overlay on hero
   const heroGrad = ctx.createLinearGradient(marg, heroY, marg, heroY + heroH);
   heroGrad.addColorStop(0.6, 'transparent');
-  heroGrad.addColorStop(1, 'rgba(18,8,34,0.8)');
+  heroGrad.addColorStop(1, 'rgba(18,2,2,0.85)');
   ctx.fillStyle = heroGrad;
   ctx.beginPath(); ctx.roundRect(marg, heroY, W - marg * 2, heroH, 8); ctx.fill();
 
   // Masthead
   const magGrad = ctx.createLinearGradient(0, 0, W, 0);
-  magGrad.addColorStop(0, '#b36aff');
-  magGrad.addColorStop(1, '#ff6ab3');
+  magGrad.addColorStop(0, '#ff2d2d');
+  magGrad.addColorStop(1, '#ff7a2d');
   ctx.fillStyle = magGrad;
-  ctx.font = `900 ${W * 0.13}px Inter, sans-serif`;
+  ctx.font = `900 ${W * 0.14}px Inter, sans-serif`;
   ctx.textAlign = 'center';
-  ctx.fillText('BOOTH', W / 2, H * 0.1);
+  ctx.fillText('BOOTH', W / 2, H * 0.105);
 
   ctx.fillStyle = 'rgba(255,255,255,0.55)';
   ctx.font = `300 ${W * 0.04}px Inter, sans-serif`;
-  ctx.letterSpacing = '0.3em';
-  ctx.fillText('MAGAZINE', W / 2, H * 0.125);
+  ctx.fillText('MAGAZINE', W / 2, H * 0.132);
 
   // Hero caption
   ctx.fillStyle = '#fff';
-  ctx.font = `700 ${W * 0.06}px Inter, sans-serif`;
+  ctx.font = `700 ${W * 0.065}px Inter, sans-serif`;
   ctx.textAlign = 'left';
-  ctx.fillText('PICTURE', marg + 10, heroY + heroH - W * 0.065);
+  ctx.fillText('PICTURE', marg + 12, heroY + heroH - W * 0.07);
   const captGrad = ctx.createLinearGradient(marg, 0, W, 0);
-  captGrad.addColorStop(0, '#b36aff');
-  captGrad.addColorStop(1, '#ff6ab3');
+  captGrad.addColorStop(0, '#ff2d2d');
+  captGrad.addColorStop(1, '#ff7a2d');
   ctx.fillStyle = captGrad;
-  ctx.fillText('PERFECT', marg + 10, heroY + heroH - W * 0.01);
+  ctx.fillText('PERFECT', marg + 12, heroY + heroH - W * 0.01);
 
   // Two thumbnails
   const thumbW = (W - marg * 3) / 2;
-  const thumbH = H - heroY - heroH - marg * 2.5;
-  const thumbY = heroY + heroH + marg;
+  const thumbH = H - heroY - heroH - marg * 3;
+  const thumbY = heroY + heroH + marg * 1.4;
 
   [photos[1], photos[2]].forEach((img, i) => {
     const tx = marg + i * (thumbW + marg);
@@ -412,10 +485,10 @@ export const renderMagazine: RenderFn = (ctx, photos, W, H) => {
     ctx.restore();
 
     const tbGrad = ctx.createLinearGradient(tx, thumbY, tx + thumbW, thumbY);
-    tbGrad.addColorStop(0, '#b36aff');
-    tbGrad.addColorStop(1, '#ff6ab3');
+    tbGrad.addColorStop(0, '#ff2d2d');
+    tbGrad.addColorStop(1, '#ff7a2d');
     ctx.strokeStyle = tbGrad;
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 2.5;
     ctx.beginPath(); ctx.roundRect(tx, thumbY, thumbW, thumbH, 6); ctx.stroke();
   });
 };
@@ -433,14 +506,14 @@ export const renderScrapbook: RenderFn = (ctx, photos, W, H) => {
     ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(W, i); ctx.stroke();
   }
 
-  const pW = W * 0.55;
-  const pHPhoto = pW * 0.72;
-  const border = pW * 0.04;
+  const pW = W * 0.56;
+  const pHPhoto = pW * 0.74;
+  const border = pW * 0.045;
 
   const configs = [
-    { x: W * 0.06, y: H * 0.04,  rot: -8, tape: '#ffe9a0' },
-    { x: W * 0.25, y: H * 0.32,  rot: 5,  tape: '#a0e0ff' },
-    { x: W * 0.12, y: H * 0.57,  rot: -3, tape: '#ffb3c1' },
+    { x: W * 0.07, y: H * 0.04,  rot: -8,  tape: '#ffe9a0' },
+    { x: W * 0.27, y: H * 0.33,  rot: 5.5, tape: '#a0e0ff' },
+    { x: W * 0.13, y: H * 0.58,  rot: -3,  tape: '#ffb3c1' },
   ];
 
   configs.forEach(({ x, y, rot, tape }, i) => {
@@ -450,10 +523,10 @@ export const renderScrapbook: RenderFn = (ctx, photos, W, H) => {
     ctx.rotate((rot * Math.PI) / 180);
 
     // Shadow
-    ctx.shadowColor = 'rgba(80,50,10,0.35)';
-    ctx.shadowBlur = 18;
-    ctx.shadowOffsetX = 3;
-    ctx.shadowOffsetY = 5;
+    ctx.shadowColor = 'rgba(80,50,10,0.38)';
+    ctx.shadowBlur = 20;
+    ctx.shadowOffsetX = 4;
+    ctx.shadowOffsetY = 6;
 
     // White photo card
     ctx.fillStyle = '#fff';
@@ -470,7 +543,7 @@ export const renderScrapbook: RenderFn = (ctx, photos, W, H) => {
     ctx.fillStyle = `${tape}bb`;
     ctx.save();
     ctx.rotate(-0.05);
-    ctx.fillRect(-pW * 0.15, -pHPhoto / 2 - border * 1.4, pW * 0.3, border * 1.2);
+    ctx.fillRect(-pW * 0.16, -pHPhoto / 2 - border * 1.5, pW * 0.32, border * 1.3);
     ctx.restore();
 
     ctx.restore();

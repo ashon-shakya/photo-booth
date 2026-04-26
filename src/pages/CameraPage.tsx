@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { Camera } from '../components/Camera/Camera';
 import { usePhotoSession } from '../hooks/usePhotoSession';
 import { TEMPLATES } from '../templates/config';
@@ -13,21 +13,30 @@ interface Props {
 export function CameraPage({ session }: Props) {
   const navigate = useNavigate();
   const { session: s, addPhoto, retakePhoto, isDone, reset } = session;
+  const navigatedRef = useRef(false);
 
   const template = TEMPLATES.find((t) => t.id === s.templateId);
 
   useEffect(() => {
-    if (!s.templateId) navigate('/');
+    if (!s.templateId) navigate('/', { replace: true });
   }, [s.templateId, navigate]);
 
   useEffect(() => {
-    if (isDone) {
+    if (isDone && !navigatedRef.current) {
+      navigatedRef.current = true;
       const timer = setTimeout(() => navigate('/result'), 600);
       return () => clearTimeout(timer);
     }
   }, [isDone, navigate]);
 
   if (!template) return null;
+
+  const handleBack = () => {
+    // Reset session entirely so templateId is cleared — prevents landing page
+    // from seeing an active session and immediately sending user back here.
+    reset();
+    navigate('/', { replace: true });
+  };
 
   return (
     <div className="camera-page page">
@@ -38,7 +47,7 @@ export function CameraPage({ session }: Props) {
         <div className="camera-page-header">
           <motion.button
             className="btn-ghost back-btn"
-            onClick={() => navigate('/')}
+            onClick={handleBack}
             whileHover={{ x: -3 }}
           >
             ← Back
@@ -106,7 +115,7 @@ export function CameraPage({ session }: Props) {
 
         {/* Reset */}
         <div className="camera-page-actions">
-          <button className="btn-ghost" id="reset-session-btn" onClick={reset}>
+          <button className="btn-ghost" id="reset-session-btn" onClick={() => { reset(); navigate('/'); }}>
             Start Over
           </button>
         </div>

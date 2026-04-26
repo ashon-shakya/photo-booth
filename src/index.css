@@ -2,25 +2,25 @@
 
 /* ─── Design Tokens ─────────────────────────────────────── */
 :root {
-  --bg-0: #0a0a0f;
-  --bg-1: #12121a;
-  --bg-2: #1a1a26;
-  --bg-3: #22223a;
+  --bg-0: #0d0507;
+  --bg-1: #150809;
+  --bg-2: #1c0c0e;
+  --bg-3: #2a1214;
   --surface: rgba(255 255 255 / 0.04);
   --surface-hover: rgba(255 255 255 / 0.08);
-  --border: rgba(255 255 255 / 0.08);
-  --border-bright: rgba(255 255 255 / 0.18);
+  --border: rgba(255 80 80 / 0.12);
+  --border-bright: rgba(255 120 120 / 0.22);
 
-  --accent: #b36aff;
-  --accent-2: #ff6ab3;
-  --accent-glow: rgba(179 106 255 / 0.35);
-  --accent-2-glow: rgba(255 106 179 / 0.25);
+  --accent: #ff2d2d;
+  --accent-2: #ff7a2d;
+  --accent-glow: rgba(255 45 45 / 0.38);
+  --accent-2-glow: rgba(255 122 45 / 0.28);
 
   --gold: #f5c842;
   --gold-dim: rgba(245 200 66 / 0.15);
 
   --text-0: #ffffff;
-  --text-1: rgba(255 255 255 / 0.82);
+  --text-1: rgba(255 255 255 / 0.88);
   --text-2: rgba(255 255 255 / 0.52);
   --text-3: rgba(255 255 255 / 0.28);
 
@@ -89,7 +89,7 @@ button { cursor: pointer; font-family: inherit; border: none; background: none; 
 
 /* ─── Utility Classes ────────────────────────────────────── */
 .gradient-text {
-  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  background: linear-gradient(135deg, #ff2d2d, #ff7a2d);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -184,7 +184,7 @@ button { cursor: pointer; font-family: inherit; border: none; background: none; 
 .bg-orb-1 {
   width: 700px;
   height: 700px;
-  background: rgba(179, 106, 255, 0.12);
+  background: rgba(255, 45, 45, 0.14);
   top: -200px;
   right: -200px;
 }
@@ -192,7 +192,7 @@ button { cursor: pointer; font-family: inherit; border: none; background: none; 
 .bg-orb-2 {
   width: 500px;
   height: 500px;
-  background: rgba(255, 106, 179, 0.08);
+  background: rgba(255, 122, 45, 0.10);
   bottom: -150px;
   left: -150px;
 }

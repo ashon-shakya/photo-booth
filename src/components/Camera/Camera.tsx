@@ -11,10 +11,16 @@ interface Props {
 }
 
 export function Camera({ onCapture, photoCount, totalPhotos }: Props) {
-  const webcamRef = useRef<Webcam>(null);
+  const webcamRef    = useRef<Webcam>(null);
+  const capturedRef  = useRef(false); // guard against double-fire in React StrictMode
   const [counting, setCounting]   = useState(false);
   const [flashing, setFlashing]   = useState(false);
   const [hasCamera, setHasCamera] = useState(true);
+
+  // Reset capture guard whenever photoCount advances
+  useEffect(() => {
+    capturedRef.current = false;
+  }, [photoCount]);
 
   useEffect(() => {
     navigator.mediaDevices?.enumerateDevices().then((devices) => {
@@ -23,12 +29,16 @@ export function Camera({ onCapture, photoCount, totalPhotos }: Props) {
   }, []);
 
   const startCountdown = useCallback(() => {
-    if (counting) return;
+    if (counting || photoCount >= totalPhotos) return;
+    capturedRef.current = false; // allow capture for the new shot
     setCounting(true);
-  }, [counting]);
+  }, [counting, photoCount, totalPhotos]);
 
   const handleCountdownDone = useCallback(() => {
     setCounting(false);
+    // Guard: only capture once per countdown
+    if (capturedRef.current) return;
+    capturedRef.current = true;
     const imageSrc = webcamRef.current?.getScreenshot();
     if (imageSrc) {
       setFlashing(true);
@@ -63,7 +73,7 @@ export function Camera({ onCapture, photoCount, totalPhotos }: Props) {
         </div>
 
         {/* Countdown overlay */}
-        {counting && <CountdownTimer onDone={handleCountdownDone} />}
+        {counting && <CountdownTimer key={photoCount} onDone={handleCountdownDone} />}
 
         {/* Flash effect */}
         <AnimatePresence>
@@ -101,15 +111,15 @@ export function Camera({ onCapture, photoCount, totalPhotos }: Props) {
           id="capture-btn"
           className={`shutter-btn ${counting ? 'counting' : ''}`}
           onClick={startCountdown}
-          disabled={counting}
-          whileHover={{ scale: counting ? 1 : 1.05 }}
+          disabled={counting || photoCount >= totalPhotos}
+          whileHover={{ scale: (counting || photoCount >= totalPhotos) ? 1 : 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
           <div className="shutter-inner" />
         </motion.button>
 
         <div className="photo-hint">
-          {counting ? 'Get ready…' : 'Click to take photo'}
+          {counting ? 'Get ready…' : photoCount >= totalPhotos ? 'All done! ✓' : 'Click to take photo'}
         </div>
       </div>
     </div>
